@@ -3,19 +3,29 @@ package app
 import skinny.engine._
 import skinny.engine.async._
 
-object Hello extends SkinnyEngineServlet with FutureSupport {
-  implicit override val executor = scala.concurrent.ExecutionContext.Implicits.global
+object Hello extends SkinnyEngineServlet {
 
   def name = params.getAs[String]("name").getOrElse("Anonymous")
-  def message = s"Hello, $name"
+  def message: String = s"Hello, $name"
 
+  // synchronous action
   get("/")(message)
-
   post("/")(message)
 
+  // asynchronous action
   get("/async") {
     AsyncResult {
       message
+    }
+  }
+
+  // returns JSON response
+  get("/json") {
+    responseAsJSON(Map("message" -> message))
+  }
+  get("/json/async") {
+    AsyncResult {
+      responseAsJSON(Map("message" -> message))
     }
   }
 }
