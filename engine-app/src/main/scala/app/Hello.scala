@@ -5,7 +5,7 @@ import skinny.engine.async._
 
 object Hello extends SkinnyEngineServlet {
 
-  def name = params.getAs[String]("name").getOrElse("Anonymous")
+  def name = params.getOrElse("name", "Anonymous")
   def message: String = s"Hello, $name"
 
   // synchronous action
