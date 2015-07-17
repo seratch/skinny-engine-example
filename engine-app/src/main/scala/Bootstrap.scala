@@ -1,8 +1,10 @@
 import javax.servlet._
 import skinny.engine._
+import app._
 
 class Bootstrap extends LifeCycle {
   override def init(ctx: ServletContext) {
-    ctx.mount(app.Hello, "/hello/*")
+    Hello.mount(ctx)
+    AsyncHello.mount(ctx)
   }
 }

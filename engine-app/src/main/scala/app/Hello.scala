@@ -3,35 +3,41 @@ package app
 import skinny.engine._
 import skinny.engine.async._
 import skinny.engine.scalate._
+import scala.concurrent._
 
-object Hello extends SkinnyEngineServlet with ScalateSupport {
+trait MessageExtractor { self: SkinnyEngineBase =>
+  def message(implicit ctx: Context): String = {
+    val name = params.getOrElse("name", "Anonymous")
+    s"Hello, $name"
+  }
+}
 
-  def name = params.getOrElse("name", "Anonymous")
-  def message: String = s"Hello, $name"
+object Hello extends WebApp with MessageExtractor {
 
-  // synchronous action
-  get("/")(message)
-  post("/")(message)
+  get("/hello")(message)
 
-  // Scalate template engine
-  get("/scalate") {
+  post("/hello")(message)
+
+  get("/hello/json") {
+    responseAsJSON(Map("message" -> message))
+  }
+}
+
+object AsyncHello extends AsyncWebApp with MessageExtractor with ScalateSupport {
+
+  get("/hello/scalate") { implicit ctx =>
     contentType = "text/html"
     ssp("/index", "name" -> "foo")
   }
 
-  // asynchronous action
-  get("/async") {
-    AsyncResult {
+  get("/hello/async") { implicit ctx =>
+    Future {
       message
     }
   }
 
-  // returns JSON response
-  get("/json") {
-    responseAsJSON(Map("message" -> message))
-  }
-  get("/json/async") {
-    AsyncResult {
+  get("/hello/json/async") { implicit ctx =>
+    Future {
       responseAsJSON(Map("message" -> message))
     }
   }

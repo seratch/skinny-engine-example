@@ -3,7 +3,8 @@ package app
 import skinny.test.scalatest.SkinnyFlatSpec
 
 class HelloSpec extends SkinnyFlatSpec {
-  addServlet(app.Hello, "/hello/*")
+  addFilter(app.Hello, "/*")
+  addFilter(app.AsyncHello, "/*")
 
   it should "work fine with GET Requests" in {
     get("/hello") {
