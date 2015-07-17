@@ -6,10 +6,16 @@ resolvers += "sonatype snapshots" at "https://oss.sonatype.org/content/repositor
 libraryDependencies += "org.skinny-framework" %% "skinny-engine-server" % "2.0.0-SNAPSHOT"
 */
 import skinny.engine._
+import scala.concurrent._
 
 WebServer.mount(new WebApp {
   get("/") {
     val name = params.getOrElse("name", "Anonymous")
     s"Hello, $name"
+  }
+  get("/async") {
+    Future {
+      responseAsJSON(params)
+    }
   }
 }).port(8081).run()
